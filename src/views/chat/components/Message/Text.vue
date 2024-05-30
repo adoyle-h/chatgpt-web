@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, onUpdated, ref } from 'vue'
 import MarkdownIt from 'markdown-it'
-import mdKatex from '@traptitech/markdown-it-katex'
+import mdKatex from '@vscode/markdown-it-katex'
 import mila from 'markdown-it-link-attributes'
 import hljs from 'highlight.js'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
@@ -36,7 +36,7 @@ const mdi = new MarkdownIt({
 })
 
 mdi.use(mila, { attrs: { target: '_blank', rel: 'noopener' } })
-mdi.use(mdKatex, { blockClass: 'katexmath-block rounded-md p-[10px]', errorColor: ' #cc0000' })
+mdi.use(mdKatex)
 
 const wrapClass = computed(() => {
   return [
@@ -70,9 +70,9 @@ function addCopyEvents() {
         const code = btn.parentElement?.nextElementSibling?.textContent
         if (code) {
           copyToClip(code).then(() => {
-            btn.textContent = '复制成功'
+            btn.textContent = t('chat.copied')
             setTimeout(() => {
-              btn.textContent = '复制代码'
+              btn.textContent = t('chat.copyCode')
             }, 1000)
           })
         }
@@ -107,13 +107,10 @@ onUnmounted(() => {
   <div class="text-black" :class="wrapClass">
     <div ref="textRef" class="leading-relaxed break-words">
       <div v-if="!inversion">
-        <div v-if="!asRawText" class="markdown-body" v-html="text" />
+        <div v-if="!asRawText" class="markdown-body" :class="{ 'markdown-body-generate': loading }" v-html="text" />
         <div v-else class="whitespace-pre-wrap" v-text="text" />
       </div>
       <div v-else class="whitespace-pre-wrap" v-text="text" />
-      <template v-if="loading">
-        <span class="dark:text-white w-[4px] h-[20px] block animate-blink" />
-      </template>
     </div>
   </div>
 </template>
